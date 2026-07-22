@@ -11,8 +11,14 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# Public env needed at build time; real secrets injected at runtime.
-ENV NEXT_TELEMETRY_DISABLED=1
+# Ensure a public/ dir exists even if the repo ships no static assets, so the
+# runner stage's COPY always has a source.
+RUN mkdir -p public
+# Placeholder build-time env. The DB connection is lazy, so no real database is
+# contacted during `next build`; real values are injected at runtime.
+ENV NEXT_TELEMETRY_DISABLED=1 \
+    DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres \
+    AUTH_SECRET=build-time-placeholder
 RUN npm run build
 
 FROM node:20-alpine AS runner
