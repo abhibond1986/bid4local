@@ -46,11 +46,14 @@ export async function updateSession(request: NextRequest) {
 
   // Server-side admin gate (defense in depth; RLS is the real backstop).
   if (user && ADMIN_PREFIXES.some((p) => path.startsWith(p))) {
-    const { data: profile } = await supabase
+    const { data } = await supabase
       .from('profiles')
       .select('role, is_active')
       .eq('id', user.id)
       .single();
+    // Cast because the generated DB types are a placeholder stub until
+    // `supabase gen types typescript` is run against the live schema.
+    const profile = data as { role: string | null; is_active: boolean | null } | null;
     const adminRoles = ['super_admin', 'organization_admin', 'auction_manager', 'finance', 'moderator', 'inspection_officer', 'delivery_coordinator'];
     if (!profile || !profile.is_active || !adminRoles.includes(profile.role as string)) {
       const url = request.nextUrl.clone();
