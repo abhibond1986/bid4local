@@ -42,3 +42,8 @@ test-results
 .turbo
 .vercel
 .arena
+
+# supabase local
+supabase/.branches
+supabase/.temp
+**/supabase/.env
