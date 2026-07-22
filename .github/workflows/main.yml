@@ -21,6 +21,10 @@ jobs:
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-anon-key
       NEXT_PUBLIC_APP_URL: http://localhost:3000
       NEXT_PUBLIC_ENABLE_DEMO_ACCOUNTS: "false"
+      # Non-connecting placeholder so any build-time module load that reads
+      # DATABASE_URL does not throw. No real DB is contacted during build.
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+      AUTH_SECRET: ci-placeholder-secret-not-used-at-runtime
     steps:
       - uses: actions/checkout@v4
 
